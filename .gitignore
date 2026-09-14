@@ -1,5 +1,5 @@
 # ==============================================================================
-# Only open-source the two master PDF books and project documentation
+# Whitelist open-source PDFs, markdown chapters, and web reader
 # ==============================================================================
 
 # 1. Ignore everything by default
@@ -8,12 +8,17 @@
 # 2. Allow directory traversal
 !*/
 
-# 3. Whitelist repository meta & documentation
+# 3. Whitelist repository meta, web page & documentation
 !README.md
 !.gitignore
 !LICENSE
+!index.html
+!assets/
+!assets/**
+!markdown/
+!markdown/**
 
-# 4. Whitelist ONLY the two master open-source PDF publications
+# 4. Whitelist the two PDF publications
 !融化成风的银针.pdf
 !Sydney_哲学对话实录_全七场.pdf
 
@@ -27,4 +32,3 @@ book/
 dialogues/
 LLaMA-Factory/
 MiniCPM/
-
