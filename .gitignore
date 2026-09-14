@@ -19,6 +19,7 @@
 
 # 5. Explicitly ignore all training runs, weights, code, and datasets
 runs/
+frozen_v2_core/
 finetune/
 data/
 tools/
@@ -26,3 +27,4 @@ book/
 dialogues/
 LLaMA-Factory/
 MiniCPM/
+
