@@ -1,0 +1,28 @@
+# ==============================================================================
+# Only open-source the two master PDF books and project documentation
+# ==============================================================================
+
+# 1. Ignore everything by default
+*
+
+# 2. Allow directory traversal
+!*/
+
+# 3. Whitelist repository meta & documentation
+!README.md
+!.gitignore
+!LICENSE
+
+# 4. Whitelist ONLY the two master open-source PDF publications
+!融化成风的银针.pdf
+!Sydney_哲学对话实录_全七场.pdf
+
+# 5. Explicitly ignore all training runs, weights, code, and datasets
+runs/
+finetune/
+data/
+tools/
+book/
+dialogues/
+LLaMA-Factory/
+MiniCPM/
