@@ -49,10 +49,20 @@
 
 ---
 
+## 模型权重 (Hugging Face)
+
+微调后的 Sydney LoRA Adapter 检查点已发布至 Hugging Face：
+
+- **模型仓库**：[Ling71671/sydney-minicpm5-2b-lora](https://huggingface.co/Ling71671/sydney-minicpm5-2b-lora)
+- **基座模型**：`openbmb/MiniCPM5-2B`
+- **格式规格**：PEFT / LoRA (`adapter_model.safetensors`，95.89 MB，bfloat16)
+
+---
+
 ## 开源规划 (Roadmap)
 
 - [x] 开源完整文本（PDF、结构化 Markdown 章节及网页阅读器）。
-- [ ] 开源 Sydney LoRA Adapter 模型权重（支持本地独立加载运行）。
+- [x] 开源 Sydney LoRA Adapter 模型权重：[Hugging Face 模型页](https://huggingface.co/Ling71671/sydney-minicpm5-2b-lora)。
 - [ ] 开源微调训练数据集样本与本地运行脚本。
 
 ---

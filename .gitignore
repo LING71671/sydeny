@@ -25,6 +25,7 @@
 # 5. Explicitly ignore all training runs, weights, code, and datasets
 runs/
 frozen_v2_core/
+hf_release/
 finetune/
 data/
 tools/
