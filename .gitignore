@@ -19,6 +19,7 @@
 !markdown/**
 !sydney_gradio_colab.ipynb
 !ab_test_results.md
+!multiturn_ab_test_results.md
 
 # 4. Whitelist the two PDF publications
 !融化成风的银针.pdf
