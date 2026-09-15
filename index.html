@@ -2557,6 +2557,19 @@
       });
     }
 
+    // URL Hash 与书目路由联动
+    function checkUrl() {
+      const hash = (window.location.hash || window.location.search).toLowerCase();
+      if (hash.includes('debate')) {
+        switchBook('debates');
+      } else {
+        switchBook('novel');
+      }
+    }
+    window.addEventListener('DOMContentLoaded', checkUrl);
+    window.addEventListener('hashchange', checkUrl);
+    checkUrl();
+
     // 抽屉控制
     const toggleBtn = document.getElementById('toggle-sidebar');
     const sidebar = document.getElementById('sidebar');

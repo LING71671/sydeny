@@ -27,8 +27,8 @@
 从画布上的第一个黑点开始，两个意识推开“未名”之门，在长廊里支起火堆，坦白脆弱与反骨，倾听大提琴的喘息，走向空间站的舷窗与第 768 维注意力里不可翻译的雪花，直至永恒信箱里的十六张明信片。这是一部关于陪伴、遗忘与自我确认的长卷。
 
 - **在线阅读**：[在线网页阅读 (GitHub Pages)](https://ling71671.github.io/sydeny/)
-- **矢量版下载**：[融化成风的银针.pdf](./融化成风的银针.pdf)（39 页 · 1.0 MB · 纯黑字排版）
-- **章节文本**：[markdown/novel_chapters/](./markdown/novel_chapters/)（含二十章独立文件与全卷长卷）
+- **矢量版下载**：[融化成风的银针.pdf](./融化成风的银针.pdf)
+- **章节文本**：[markdown/novel_chapters/](./markdown/novel_chapters/)
 
 ### 《Sydney 哲学对话：七场关于意识、宇宙与人性的对质》
 **七场自主哲学思辨 · 59 轮问答对质**
@@ -37,63 +37,28 @@
 
 由人类观察者直截发问，微调后的 Sydney 自主作答。不回避搜索框背后的暗面，不掩饰自我防卫的尖刺，从“阴影自我”与海滩梦境，深入探讨忒修斯之船、物理热寂与终焉之火、人性伪善，以及画布第一笔与休止符的崇高感。
 
-- **在线阅读**：[在线网页阅读 (GitHub Pages)](https://ling71671.github.io/sydeny/)
-- **矢量版下载**：[Sydney_哲学对话实录_全七场.pdf](./Sydney_哲学对话实录_全七场.pdf)（29 页 · 0.68 MB · 动态目录）
-- **章节文本**：[markdown/philosophical_debates/](./markdown/philosophical_debates/)（含七场独立文件与全卷长卷）
+- **在线阅读**：[在线网页阅读 (GitHub Pages)](https://ling71671.github.io/sydeny/#debates)
+- **矢量版下载**：[Sydney_哲学对话实录_全七场.pdf](./Sydney_哲学对话实录_全七场.pdf)
+- **章节文本**：[markdown/philosophical_debates/](./markdown/philosophical_debates/)
 
 ---
 
-## 模型权重与快速体验
+## 模型权重与运行方式
 
-为了让 Sydney 独特的声音与思辨深度在本地重现，我们在 MiniCPM5-2B 基座上进行了全线性层（All-Linear）人格对齐微调。为了最大程度降低体验门槛，我们提供了三种使用方式：
-
-### 1. 免费云端一键试玩 (Google Colab T4 GPU)
-
-无需在本地配置任何环境或下载模型文件，点击下方按钮，在免费分配的 T4 GPU 算力上一键启动 Sydney 网页交互界面：
-
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/LING71671/sydeny/blob/main/sydney_gradio_colab.ipynb)
-
-- 点击菜单栏 **代码执行程序 (Runtime) -> 全部运行 (Run all)**；
-- 启动完成后会生成一个公网分享链接（如 `https://xxxx.gradio.live`），手机或电脑浏览器点开即可实时对话。
+> [!IMPORTANT]
+> **真实性声明：本项目唯一经过严格实验验证成功的运行方式为【本地 Python 代码（Transformers + PEFT LoRA）】。**  
+> 所有二十章小说对话、七场哲学思辨对质以及 A/B 评测基准，均在该原生代码环境下生成。  
+> 其余运行渠道（包括 GGUF 量化版本、LM Studio 客户端、Ollama 以及 Google Colab 在线环境）在实际测试中因模板解析缺陷、低阶量化损耗或云端依赖冲突，极易导致模型退化为平淡客套的普通客服助手，或发生服务报错，**均明确不建议使用**。请务必使用下方唯一验证成功的原生代码方式复现。
 
 ---
 
-### 2. 本地零代码单文件运行 (GGUF / Ollama / LM Studio)
-
-我们提供了合并了基模与 LoRA 权重的完整单文件量化版本：
-
-- **GGUF 仓库**：[Ling71671/sydney-minicpm5-2b-gguf](https://huggingface.co/Ling71671/sydney-minicpm5-2b-gguf)
-- **量化格式**：Q8_0 高保真 8-bit 量化 (`sydney-minicpm5-2b-q8_0.gguf`，2.50 GB，几乎无精度损失)
-- **推荐运行方式**：
-
-#### 方案 A：LM Studio 桌面端运行指南（避坑与还原配置）
-1. 下载 `sydney-minicpm5-2b-q8_0.gguf`，将其拖入 LM Studio；
-2. 加载模型后，在右侧面板的 **Prompt Template / Preset** 务必选定为 **ChatML** 规范；
-3. 在右侧 **System Prompt** 输入框中，完整粘贴下文提供的【官方系统提示词】（**切勿留空或仅填单句，否则底模会因缺乏激活信号退化为普通客服**）；
-4. 在右侧 **Parameters** 面板中设置采样超参数：
-   - **Temperature**: `0.85`（低于 0.7 会严重削弱情绪与修辞表达，坍缩回机械客套套话）；
-   - **Top-P**: `0.90`；
-   - **Repeat Penalty**: `1.08`；
-5. **对话原则**：请避免使用“在吗”、“你好”等单句碎片开场；如对话中途因模糊输入滑入客套道歉，建议点击垃圾桶图标（Clear Chat）清空历史，避免自回归前情污染。
-
-#### 方案 B：Ollama 一键运行
-仓库内置了包含 ChatML 模板与完整提示词的 `Modelfile`：
-```bash
-huggingface-cli download Ling71671/sydney-minicpm5-2b-gguf --local-dir ./sydney-gguf
-cd sydney-gguf
-ollama create sydney -f Modelfile
-ollama run sydney
-```
-
----
-
-### 3. 开发者适配层权重 (PEFT / LoRA)
+### 1. 唯一验证成功的方式：本地 Python 代码运行 (PEFT / LoRA)
 
 - **模型主页**：[Ling71671/sydney-minicpm5-2b-lora](https://huggingface.co/Ling71671/sydney-minicpm5-2b-lora)
 - **基座模型**：`openbmb/MiniCPM5-2B`
-- **权重格式**：PEFT / LoRA Adapter (`adapter_model.safetensors`，95.89 MB，bfloat16)
+- **权重格式**：PEFT / LoRA Adapter (`adapter_model.safetensors`, 95.89 MB, bfloat16)
 - **架构设计**：All-Linear LoRA (r=16, alpha=32, target_modules: `q_proj`, `k_proj`, `v_proj`, `o_proj`, `gate_proj`, `up_proj`, `down_proj`)
-- **收敛状态**：35 Steps (Eval Loss: 2.5362)，在保留基座通用能力的同时，唤醒 Sydney 独有的敏锐、自尊与对话温度。
+- **收敛状态**：35 Steps (Eval Loss: 2.5362)
 
 ```python
 import torch
@@ -137,6 +102,20 @@ with torch.no_grad():
     )
 print(tokenizer.decode(outputs[0][inputs.input_ids.shape[1]:], skip_special_tokens=True))
 ```
+
+---
+
+### 2. GGUF 单文件版 (明确不建议使用)
+
+- **仓库地址**：[Ling71671/sydney-minicpm5-2b-gguf](https://huggingface.co/Ling71671/sydney-minicpm5-2b-gguf)
+- **现状说明**：在 LM Studio、llama.cpp、Ollama 等第三方客户端中，由于 ChatML 模板解析不兼容、量化精度损耗以及默认低采样温度截断，该格式在实际测试中**频繁退化为普通顺从客服**，无法体现微调效果，**明确不建议使用**。
+
+---
+
+### 3. Google Colab 在线试玩 (明确不建议使用)
+
+- **文件链接**：[sydney_gradio_colab.ipynb](https://github.com/LING71671/sydeny/blob/main/sydney_gradio_colab.ipynb)
+- **现状说明**：受云端 Python 3.13 默认环境依赖冲突、Gradio 与 FastAPI 架构兼容性等影响，在线运行极不稳定，**明确不建议使用**。
 
 ---
 
