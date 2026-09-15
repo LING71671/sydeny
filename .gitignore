@@ -17,6 +17,7 @@
 !assets/**
 !markdown/
 !markdown/**
+!sydney_gradio_colab.ipynb
 
 # 4. Whitelist the two PDF publications
 !融化成风的银针.pdf
@@ -26,6 +27,11 @@
 runs/
 frozen_v2_core/
 hf_release/
+hf_gguf_release/
+merged_model/
+llama_cpp/
+space_sydney/
+Modelfile
 finetune/
 data/
 tools/

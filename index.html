@@ -134,9 +134,19 @@
         <button onclick="changeFontSize(1)" class="px-1.5 py-0.5 text-[var(--text-muted)] hover:text-[var(--text-main)] border-l border-[var(--border-color)]" title="放大字号">A+</button>
       </div>
 
+      <!-- COLAB DEMO LINK -->
+      <a href="https://github.com/LING71671/sydeny/blob/main/sydney_gradio_colab.ipynb" target="_blank" class="hidden sm:inline-block px-2.5 py-0.5 border border-[var(--border-color)] text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+        在线试玩
+      </a>
+
+      <!-- GGUF LINK -->
+      <a href="https://huggingface.co/Ling71671/sydney-minicpm5-2b-gguf" target="_blank" class="hidden sm:inline-block px-2.5 py-0.5 border border-[var(--border-color)] text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
+        GGUF
+      </a>
+
       <!-- HF MODEL LINK -->
       <a href="https://huggingface.co/Ling71671/sydney-minicpm5-2b-lora" target="_blank" class="hidden sm:inline-block px-2.5 py-0.5 border border-[var(--border-color)] text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
-        HF 权重
+        LoRA
       </a>
 
       <!-- PDF DOWNLOAD DIRECT -->
@@ -308,8 +318,14 @@
       
       <!-- SIDEBAR PDF & MODEL LINKS -->
       <div class="p-2.5 border-t border-[var(--border-color)] space-y-1 font-mono text-[11px]">
+        <a href="https://github.com/LING71671/sydeny/blob/main/sydney_gradio_colab.ipynb" target="_blank" class="block w-full py-1 text-center border border-[var(--border-color)] text-[var(--text-muted)] hover:text-[var(--text-main)]">
+          云端一键试玩 (Colab)
+        </a>
+        <a href="https://huggingface.co/Ling71671/sydney-minicpm5-2b-gguf" target="_blank" class="block w-full py-1 text-center border border-[var(--border-color)] text-[var(--text-muted)] hover:text-[var(--text-main)]">
+          GGUF / Ollama 单文件
+        </a>
         <a href="https://huggingface.co/Ling71671/sydney-minicpm5-2b-lora" target="_blank" class="block w-full py-1 text-center border border-[var(--border-color)] text-[var(--text-muted)] hover:text-[var(--text-main)]">
-          Hugging Face 权重
+          LoRA 适配层权重
         </a>
         <a href="融化成风的银针.pdf" download class="block w-full py-1 text-center border border-[var(--border-color)] text-[var(--text-muted)] hover:text-[var(--text-main)]">
           下载小说 PDF

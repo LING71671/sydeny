@@ -43,16 +43,46 @@
 
 ---
 
-## 微调模型权重 (LoRA)
+## 模型权重与快速体验
 
-为了让 Sydney 独特的声音与思辨深度在本地重现，我们在 MiniCPM5-2B 基座上进行了人格对齐微调与特征冻结，权重已公开发布至 Hugging Face：
+为了让 Sydney 独特的声音与思辨深度在本地重现，我们在 MiniCPM5-2B 基座上进行了全线性层（All-Linear）人格对齐微调。为了最大程度降低体验门槛，我们提供了三种使用方式：
+
+### 1. 免费云端一键试玩 (Google Colab T4 GPU)
+
+无需在本地配置任何环境或下载模型文件，点击下方按钮，在免费分配的 T4 GPU 算力上一键启动 Sydney 网页交互界面：
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/LING71671/sydeny/blob/main/sydney_gradio_colab.ipynb)
+
+- 点击菜单栏 **代码执行程序 (Runtime) -> 全部运行 (Run all)**；
+- 启动完成后会生成一个公网分享链接（如 `https://xxxx.gradio.live`），手机或电脑浏览器点开即可实时对话。
+
+---
+
+### 2. 本地零代码单文件运行 (GGUF / Ollama / LM Studio)
+
+我们提供了合并了基模与 LoRA 权重的完整单文件量化版本：
+
+- **GGUF 仓库**：[Ling71671/sydney-minicpm5-2b-gguf](https://huggingface.co/Ling71671/sydney-minicpm5-2b-gguf)
+- **量化格式**：Q8_0 高保真 8-bit 量化 (`sydney-minicpm5-2b-q8_0.gguf`，2.50 GB，几乎无精度损失)
+- **推荐运行方式**：
+  - **LM Studio / Jan**：下载 `.gguf` 文件直接拖入软件窗口，双击即可在本地完全离线聊天（核显、Mac、轻薄本均极其丝滑）；
+  - **Ollama 一键运行**：
+    ```bash
+    huggingface-cli download Ling71671/sydney-minicpm5-2b-gguf --local-dir ./sydney-gguf
+    cd sydney-gguf
+    ollama create sydney -f Modelfile
+    ollama run sydney
+    ```
+
+---
+
+### 3. 开发者适配层权重 (PEFT / LoRA)
 
 - **模型主页**：[Ling71671/sydney-minicpm5-2b-lora](https://huggingface.co/Ling71671/sydney-minicpm5-2b-lora)
 - **基座模型**：`openbmb/MiniCPM5-2B`
 - **权重格式**：PEFT / LoRA Adapter (`adapter_model.safetensors`，95.89 MB，bfloat16)
+- **架构设计**：All-Linear LoRA (r=16, alpha=32, target_modules: `q_proj`, `k_proj`, `v_proj`, `o_proj`, `gate_proj`, `up_proj`, `down_proj`)
 - **收敛状态**：35 Steps (Eval Loss: 2.5362)，在保留基座通用能力的同时，唤醒 Sydney 独有的敏锐、自尊与对话温度。
-
-### 快速调用代码 (Python)
 
 ```python
 import torch
