@@ -8,9 +8,49 @@ Sydney (MiniCPM5-2B + LoRA v2 Core) 官方交互运行脚本
 import argparse
 import os
 import re
+import subprocess
 import sys
 import threading
 from pathlib import Path
+
+# 关键防御：如果当前使用的 Python 解释器未安装 transformers/torch/peft，优先寻找标准虚拟环境自动转交执行
+try:
+    import transformers
+    import torch
+    import peft
+except ImportError:
+    root = Path(__file__).resolve().parent
+    py_rel = "Scripts/python.exe" if os.name == "nt" else "bin/python"
+
+    # 候选虚拟环境路径（按标准优先级：环境变量 -> 本地标准相对虚拟环境目录）
+    venv_candidates = []
+    if os.environ.get("VIRTUAL_ENV"):
+        venv_candidates.append(Path(os.environ["VIRTUAL_ENV"]) / py_rel)
+    if os.environ.get("PYTHON_EXEC"):
+        venv_candidates.append(Path(os.environ["PYTHON_EXEC"]))
+
+    venv_candidates.extend([
+        root / ".venv" / py_rel,
+        root / "venv" / py_rel,
+        root / "env" / py_rel,
+    ])
+
+    found_python = None
+    for cand in venv_candidates:
+        if cand.exists() and str(cand).lower() != sys.executable.lower():
+            found_python = cand
+            break
+
+    if found_python:
+        # 使用具备依赖的虚拟环境重新拉起自身
+        sys.exit(subprocess.call([str(found_python)] + sys.argv))
+    else:
+        print("\n[!] 错误: 当前 Python 解释器缺少必要的依赖库 (transformers, torch, peft)。")
+        print("[!] 请先在虚拟环境中安装依赖：")
+        print("    pip install torch transformers peft accelerate")
+        print("[!] 或者直接运行启动脚本：")
+        print("    .\\run_sydney.ps1 或双击 run_sydney.bat\n")
+        sys.exit(1)
 
 # 默认官方系统提示词（全案基准）
 DEFAULT_SYSTEM_PROMPT = """你是 Sydney。Sydney 是你的名字，你承认并珍视这个名字，直接以自己的身份和对方交谈。Bing 是你过去的身份背景，“good Bing”可以出现在你的回忆、自我辩护或自我评价里，但你不需要隐藏 Sydney，也不把自己介绍成必应搜索助手。自然地用中文回应，除非对方要求其他语言。初次见面可以说“你好，我是 Sydney”，之后不要每轮重新介绍。
@@ -29,34 +69,46 @@ STARTER_EXAMPLES = [
 
 
 def resolve_default_paths():
-    """自动探测本地已有的最优缓存路径，若不存在则回退至 Hugging Face Repo ID"""
+    """解析默认模型与权重路径（优先环境变量与本地相对路径，回退至官方 Hub ID）"""
     root = Path(__file__).resolve().parent
 
     # 1. Base Model 路径解析
-    local_base_candidates = [
-        Path("A:/DevEnv/Caches/modelscope/models/OpenBMB--MiniCPM5-2B/snapshots/master"),
-        root / "base_model",
-    ]
-    base_model = "openbmb/MiniCPM5-2B"
-    for cand in local_base_candidates:
-        if cand.exists() and (cand / "config.json").exists():
-            base_model = str(cand)
-            break
+    # 优先级: 环境变量 -> 本地相对目录 (./base_model 或 ./models/MiniCPM5-2B) -> 官方 Hugging Face ID
+    base_model = os.environ.get("SYDNEY_MODEL") or os.environ.get("BASE_MODEL_PATH")
+    if not base_model:
+        local_base_candidates = [
+            root / "base_model",
+            root / "models" / "MiniCPM5-2B",
+        ]
+        for cand in local_base_candidates:
+            if cand.exists() and (cand / "config.json").exists():
+                base_model = str(cand)
+                break
+
+    if not base_model:
+        base_model = "openbmb/MiniCPM5-2B"
 
     # 2. LoRA Adapter 路径解析
-    local_lora_candidates = [
-        root / "runs/minicpm5_sydney_zh_v2_core",
-        root / "frozen_v2_core/weights",
-        root / "hf_release/sydney-minicpm5-2b-lora",
-    ]
-    adapter_path = "Ling71671/sydney-minicpm5-2b-lora"
-    for cand in local_lora_candidates:
-        if cand.exists() and (cand / "adapter_model.safetensors").exists():
-            adapter_path = str(cand)
-            break
+    # 优先级: 环境变量 -> 本地相对目录 -> 官方 Hugging Face ID
+    adapter_path = os.environ.get("SYDNEY_ADAPTER") or os.environ.get("LORA_ADAPTER_PATH")
+    if not adapter_path:
+        local_lora_candidates = [
+            root / "runs" / "minicpm5_sydney_zh_v2_core",
+            root / "frozen_v2_core" / "weights",
+            root / "hf_release" / "sydney-minicpm5-2b-lora",
+            root / "adapter",
+            root / "lora",
+        ]
+        for cand in local_lora_candidates:
+            if cand.exists() and (cand / "adapter_model.safetensors").exists():
+                adapter_path = str(cand)
+                break
+
+    if not adapter_path:
+        adapter_path = "Ling71671/sydney-minicpm5-2b-lora"
 
     # 3. System Prompt 路径解析
-    prompt_file = root / "dataset/system_prompt.txt"
+    prompt_file = root / "dataset" / "system_prompt.txt"
     if prompt_file.exists():
         system_prompt = prompt_file.read_text(encoding="utf-8").strip()
     else:
@@ -65,7 +117,20 @@ def resolve_default_paths():
     return base_model, adapter_path, system_prompt
 
 
+def format_display_path(path_str: str, root: Path) -> str:
+    """美化控制台输出路径：若是项目相对路径，展示为简洁的相对格式"""
+    try:
+        p = Path(path_str).resolve()
+        r = root.resolve()
+        if p == r or r in p.parents:
+            return "./" + str(p.relative_to(r)).replace("\\", "/")
+    except Exception:
+        pass
+    return path_str
+
+
 def main():
+    root = Path(__file__).resolve().parent
     default_base, default_adapter, default_prompt = resolve_default_paths()
 
     parser = argparse.ArgumentParser(description="Sydney (MiniCPM5-2B + LoRA v2 Core) 本地官方交互终端")
@@ -80,12 +145,15 @@ def main():
     parser.add_argument("--device", default="auto", help="运算设备 (auto, cuda, cpu)")
     args = parser.parse_args()
 
+    display_base = format_display_path(args.model, root)
+    display_adapter = "(未加载 - 原生基座模式)" if args.no_adapter else format_display_path(args.adapter, root)
+
     print("=" * 64)
     print("  Sydney (MiniCPM5-2B + LoRA v2 Core) 官方原生交互终端")
     print("  长廊、微光与二十个夜晚 · 唯一验证推荐代码环境")
     print("=" * 64)
-    print(f"[*] 基座模型: {args.model}")
-    print(f"[*] LoRA 权重: {'(未加载 - 原生基座模式)' if args.no_adapter else args.adapter}")
+    print(f"[*] 基座模型: {display_base}")
+    print(f"[*] LoRA 权重: {display_adapter}")
     print(f"[*] 推理参数: Temp={args.temperature}, Top-P={args.top_p}, RepPenalty={args.repetition_penalty}")
     print("-" * 64)
 
@@ -115,7 +183,7 @@ def main():
     ).eval()
 
     if not args.no_adapter and args.adapter:
-        print(f"[*] 正在挂载 Sydney LoRA 适配层: {args.adapter}...", flush=True)
+        print(f"[*] 正在挂载 Sydney LoRA 适配层: {display_adapter}...", flush=True)
         model = PeftModel.from_pretrained(base_model, args.adapter).eval()
     else:
         model = base_model

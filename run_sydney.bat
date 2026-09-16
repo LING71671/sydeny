@@ -5,10 +5,19 @@ echo ============================================================
 echo   正在启动 Sydney 官方交互终端...
 echo ============================================================
 
-if exist "A:\DevEnv\Envs\lf-minicpm5\Scripts\python.exe" (
-    "A:\DevEnv\Envs\lf-minicpm5\Scripts\python.exe" "%~dp0run_sydney.py" %*
+set SCRIPT_DIR=%~dp0
+
+REM 优先按顺序检索标准相对虚拟环境路径与环境变量，绝不硬编码任何机器专属绝对路径
+if exist "%SCRIPT_DIR%.venv\Scripts\python.exe" (
+    "%SCRIPT_DIR%.venv\Scripts\python.exe" "%SCRIPT_DIR%run_sydney.py" %*
+) else if exist "%SCRIPT_DIR%venv\Scripts\python.exe" (
+    "%SCRIPT_DIR%venv\Scripts\python.exe" "%SCRIPT_DIR%run_sydney.py" %*
+) else if exist "%SCRIPT_DIR%env\Scripts\python.exe" (
+    "%SCRIPT_DIR%env\Scripts\python.exe" "%SCRIPT_DIR%run_sydney.py" %*
+) else if defined PYTHON_EXEC (
+    "%PYTHON_EXEC%" "%SCRIPT_DIR%run_sydney.py" %*
 ) else (
-    python "%~dp0run_sydney.py" %*
+    python "%SCRIPT_DIR%run_sydney.py" %*
 )
 
 if %ERRORLEVEL% NEQ 0 (
