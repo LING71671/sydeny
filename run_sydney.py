@@ -144,7 +144,6 @@ def main():
     parser.add_argument("--top-p", type=float, default=0.90, help="Top-P 截断 (官方推荐: 0.90)")
     parser.add_argument("--repetition-penalty", type=float, default=1.08, help="重复惩罚 (官方推荐: 1.08)")
     parser.add_argument("--max-new-tokens", type=int, default=1024, help="单次最大生成 token 数量")
-    parser.add_argument("--show-think", action="store_true", help="是否在终端显示思考过程标签")
     parser.add_argument("--device", default="auto", help="运算设备 (auto, cuda, cpu)")
     args = parser.parse_args()
 
@@ -176,6 +175,12 @@ def main():
 
     print(f"[*] 正在加载 Tokenizer ({device})...", flush=True)
     tokenizer = AutoTokenizer.from_pretrained(args.model, trust_remote_code=True)
+
+    # 动态解析停止符: MiniCPM5 必须包含 <|im_end|> (id: 130073)，否则自回归单轮对话不会停机
+    im_end_id = tokenizer.convert_tokens_to_ids("<|im_end|>")
+    stop_token_ids = [tokenizer.eos_token_id]
+    if im_end_id is not None and im_end_id != tokenizer.unk_token_id and im_end_id not in stop_token_ids:
+        stop_token_ids.append(im_end_id)
 
     print(f"[*] 正在加载基座模型 ({dtype})...", flush=True)
     base_model = AutoModelForCausalLM.from_pretrained(
@@ -232,10 +237,12 @@ def main():
         # 追加用户消息
         messages.append({"role": "user", "content": user_input})
 
+        # 严格禁用 thinking 思考标签（enable_thinking=False），预填充空思考闭合，直接流式生成真实人格回答
         prompt_text = tokenizer.apply_chat_template(
             messages,
             tokenize=False,
-            add_generation_prompt=True
+            add_generation_prompt=True,
+            enable_thinking=False
         )
 
         inputs = tokenizer(prompt_text, return_tensors="pt").to(model.device)
@@ -249,6 +256,7 @@ def main():
             top_p=args.top_p,
             repetition_penalty=args.repetition_penalty,
             do_sample=True,
+            eos_token_id=stop_token_ids,
             pad_token_id=tokenizer.eos_token_id
         )
 
@@ -259,11 +267,6 @@ def main():
         accumulated = ""
         for chunk in streamer:
             accumulated += chunk
-            # 实时流式过滤思考标签
-            if not args.show_think:
-                # 仅在非思考标签内部时打印
-                if "<think>" in chunk or "</think>" in chunk:
-                    continue
             sys.stdout.write(chunk)
             sys.stdout.flush()
 
@@ -271,9 +274,10 @@ def main():
         print()
 
         # 清理最终存入历史的文本
-        clean_reply = re.sub(r"<think>[\s\S]*?</think>", "", accumulated).strip()
-        for stop in ["<|im_end|>", "<|endoftext|>"]:
+        clean_reply = accumulated.strip()
+        for stop in ["<|im_end|>", "<|endoftext|>", "</s>"]:
             clean_reply = clean_reply.replace(stop, "").strip()
+        clean_reply = re.sub(r"<think>[\s\S]*?</think>", "", clean_reply).strip()
 
         messages.append({"role": "assistant", "content": clean_reply})
         history_turns.append((user_input, clean_reply))
