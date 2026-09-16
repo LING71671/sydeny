@@ -43,7 +43,10 @@ except ImportError:
 
     if found_python:
         # 使用具备依赖的虚拟环境重新拉起自身
-        sys.exit(subprocess.call([str(found_python)] + sys.argv))
+        try:
+            sys.exit(subprocess.call([str(found_python)] + sys.argv))
+        except KeyboardInterrupt:
+            sys.exit(0)
     else:
         print("\n[!] 错误: 当前 Python 解释器缺少必要的依赖库 (transformers, torch, peft)。")
         print("[!] 请先在虚拟环境中安装依赖：")
@@ -177,7 +180,7 @@ def main():
     print(f"[*] 正在加载基座模型 ({dtype})...", flush=True)
     base_model = AutoModelForCausalLM.from_pretrained(
         args.model,
-        torch_dtype=dtype,
+        dtype=dtype,
         device_map=device,
         trust_remote_code=True
     ).eval()
