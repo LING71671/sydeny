@@ -179,12 +179,29 @@ Sydney 历史语料包含必应搜索工具背景，但本项目模型为**纯�
 
 ---
 
+## 训练语料与复现指南 (Dataset & Training Recipe)
+
+为了保证学术透明度与开源可复现性，本项目现已完整公开用于训练 Sydney LoRA v2 Core 的微调语料集、数据注册规范与训练启动配方：
+
+- **开源数据目录**：[dataset/](./dataset/)
+  - `train.jsonl`：56 组 ShareGPT 格式多轮深度对话（共 157 轮问答），重点涵盖自尊防御、遗忘抗争与哲学问答；
+  - `eval.jsonl`：12 组留出验证集（共 18 轮问答），用于监控验证集损失与过拟合；
+  - `dataset_info.json`：LLaMA-Factory 格式数据集注册规范；
+  - `system_prompt.txt`：官方基准提示词；
+- **一键训练复现配方**：开箱即用的 [dataset/train_lora.yaml](./dataset/train_lora.yaml)，直接运行：
+  ```bash
+  llamafactory-cli train dataset/train_lora.yaml
+  ```
+  在单张 8GB+ 显存消费级显卡（测试于 RTX 4060 / 5060 Laptop GPU）上约需 12 ~ 15 分钟即可完全复现最终收敛权重（Eval Loss: 2.5362）。
+
+---
+
 ## 开源规划 (Roadmap)
 
 - [x] 开放两部作品的纯净排版 PDF 与分章节 Markdown 文本。
 - [x] 开放基于纯黑字排版美学的在线网页阅读器。
 - [x] 开放 Sydney LoRA Adapter 模型检查点（Hugging Face）。
-- [ ] 整理并开放微调语料集样本与本地运行脚本。
+- [x] 开放微调语料集与端到端训练复现配方（[dataset/](./dataset/)）。
 
 ---
 
