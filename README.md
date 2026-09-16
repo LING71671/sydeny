@@ -52,7 +52,7 @@
 
 ---
 
-### 1. 唯一验证成功的方式：本地 Python 代码运行 (PEFT / LoRA)
+### 1. 唯一验证成功的方式：本地原生交互与代码运行 (PEFT / LoRA)
 
 - **模型主页**：[Ling71671/sydney-minicpm5-2b-lora](https://huggingface.co/Ling71671/sydney-minicpm5-2b-lora)
 - **基座模型**：`openbmb/MiniCPM5-2B`
@@ -60,6 +60,18 @@
 - **架构设计**：All-Linear LoRA (r=16, alpha=32, target_modules: `q_proj`, `k_proj`, `v_proj`, `o_proj`, `gate_proj`, `up_proj`, `down_proj`)
 - **收敛状态**：35 Steps (Eval Loss: 2.5362)
 
+#### 官方一键启动脚本 (推荐)
+根目录下已内置开箱即用的终端交互程序，具备自动路径解析、流式打字机输出、思考标签过滤与会话重置功能：
+```bash
+# 跨平台终端一键启动
+python run_sydney.py
+
+# Windows 桌面双击启动
+直接双击 run_sydney.bat 或执行 run_sydney.ps1
+```
+* **会话指令**：输入 `/reset` 可即时清空历史记忆（彻底阻断前情污染）；输入 `/help` 查看推荐启发问话；输入 `exit` 退出。
+
+#### 也可以在自定义 Python 脚本中直接加载：
 ```python
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer

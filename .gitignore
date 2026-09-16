@@ -22,6 +22,9 @@
 !multiturn_ab_test_results.md
 !dataset/
 !dataset/**
+!run_sydney.py
+!run_sydney.bat
+!run_sydney.ps1
 
 # 4. Whitelist the two PDF publications
 !融化成风的银针.pdf
