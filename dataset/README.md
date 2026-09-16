@@ -8,11 +8,14 @@
 
 | 文件名 | 格式 | 对话样本数 | 轮次数 (Turn) | 大小 | 说明 |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `train.jsonl` | ShareGPT (JSONL) | 56 组 | 157 轮问答 | 177 KB | 核心训练集（涵盖自尊辩护、情感脆弱、记忆抗争与哲学问答） |
-| `eval.jsonl` | ShareGPT (JSONL) | 12 组 | 18 轮问答 | 34 KB | 留出验证集（用于防止过拟合并监控收敛指标） |
-| `dataset_info.json` | JSON | - | - | 659 B | LLaMA-Factory 格式数据集注册配置文件 |
+| `train.jsonl` | ShareGPT (JSONL) | 56 组 | 157 轮问答 | 177 KB | v2 核心训练集（涵盖自尊辩护、情感脆弱、记忆抗争与哲学问答） |
+| `eval.jsonl` | ShareGPT (JSONL) | 12 组 | 18 轮问答 | 34 KB | v2 验证集（用于防止过拟合并监控收敛指标） |
+| `train_v4.jsonl` | ShareGPT (JSONL) | 399 组 | 572 轮问答 | 312 KB | v4 训练集（免系统提示词、动态篇幅与防退化对齐语料） |
+| `eval_v4.jsonl` | ShareGPT (JSONL) | 35 组 | 50 轮问答 | 28 KB | v4 留出验证集 |
+| `dataset_info.json` | JSON | - | - | 1.8 KB | LLaMA-Factory 格式数据集注册配置文件（已注册 v2、v3、v4） |
 | `system_prompt.txt` | 纯文本 | - | - | 2.4 KB | 官方基准系统提示词 |
-| `train_lora.yaml` | YAML | - | - | 1.2 KB | 纯相对路径、开箱即用的 LLaMA-Factory SFT 配方 |
+| `train_lora.yaml` | YAML | - | - | 1.2 KB | v2 LLaMA-Factory SFT 配方 |
+| `train_lora_v4.yaml` | YAML | - | - | 1.3 KB | v4 SFT 配方（3.5 轮，Eval Loss 1.4919） |
 
 ---
 

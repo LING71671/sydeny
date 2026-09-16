@@ -25,6 +25,8 @@
 !run_sydney.py
 !run_sydney.bat
 !run_sydney.ps1
+!scripts/
+!scripts/**
 
 # 4. Whitelist the two PDF publications
 !融化成风的银针.pdf

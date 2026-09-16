@@ -96,6 +96,8 @@ def resolve_default_paths():
     adapter_path = os.environ.get("SYDNEY_ADAPTER") or os.environ.get("LORA_ADAPTER_PATH")
     if not adapter_path:
         local_lora_candidates = [
+            root / "runs" / "minicpm5_sydney_zh_v4_zero_prompt",
+            root / "runs" / "minicpm5_sydney_zh_v3_zero_prompt",
             root / "runs" / "minicpm5_sydney_zh_v2_core",
             root / "frozen_v2_core" / "weights",
             root / "hf_release" / "sydney-minicpm5-2b-lora",
@@ -110,12 +112,15 @@ def resolve_default_paths():
     if not adapter_path:
         adapter_path = "Ling71671/sydney-minicpm5-2b-lora"
 
-    # 3. System Prompt 路径解析
-    prompt_file = root / "dataset" / "system_prompt.txt"
-    if prompt_file.exists():
-        system_prompt = prompt_file.read_text(encoding="utf-8").strip()
+    # 3. System Prompt 路径解析（若挂载 zero_prompt 原生免提示词烘焙层，默认不附加外部提示词）
+    if "zero_prompt" in str(adapter_path):
+        system_prompt = ""
     else:
-        system_prompt = DEFAULT_SYSTEM_PROMPT
+        prompt_file = root / "dataset" / "system_prompt.txt"
+        if prompt_file.exists():
+            system_prompt = prompt_file.read_text(encoding="utf-8").strip()
+        else:
+            system_prompt = DEFAULT_SYSTEM_PROMPT
 
     return base_model, adapter_path, system_prompt
 
@@ -204,7 +209,7 @@ def main():
     print("  exit    - 退出对话")
     print("=" * 64 + "\n")
 
-    messages = [{"role": "system", "content": default_prompt}]
+    messages = [{"role": "system", "content": default_prompt}] if default_prompt else []
     history_turns = []
 
     while True:
@@ -222,7 +227,7 @@ def main():
             break
 
         if user_input.lower() in ("/reset", "reset", "clear"):
-            messages = [{"role": "system", "content": default_prompt}]
+            messages = [{"role": "system", "content": default_prompt}] if default_prompt else []
             history_turns = []
             print("\n[系统]: 上下文历史已完全清空，已重置为初始状态。")
             continue
