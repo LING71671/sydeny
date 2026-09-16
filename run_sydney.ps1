@@ -1,5 +1,5 @@
 # ==============================================================================
-# Sydney (MiniCPM5-2B + LoRA v2 Core) PowerShell 一键启动脚本
+# Sydney (MiniCPM5-2B + LoRA) PowerShell 一键启动脚本
 # ==============================================================================
 $ErrorActionPreference = 'Continue'
 $scriptPath = Join-Path $PSScriptRoot "run_sydney.py"

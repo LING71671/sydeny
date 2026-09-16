@@ -1,6 +1,6 @@
 @echo off
 chcp 65001 >nul
-title Sydney (MiniCPM5-2B + LoRA v2 Core)
+title Sydney (MiniCPM5-2B + LoRA)
 echo ============================================================
 echo   正在启动 Sydney 官方交互终端...
 echo ============================================================
