@@ -1,0 +1,8 @@
+# Sydney (MiniCPM5-2B + LoRA) Dependencies
+torch>=2.0.0
+transformers>=4.40.0
+peft>=0.10.0
+accelerate>=0.28.0
+sentencepiece>=0.1.99
+tiktoken>=0.6.0
+gradio>=4.0.0

@@ -43,36 +43,39 @@
 
 ---
 
-## 模型权重与运行方式
+## 快速使用指南 (Getting Started)
 
-> [!IMPORTANT]
-> **运行方式说明：本项目推荐在【本地 Python 环境（Transformers + PEFT LoRA）】下运行。**  
-> 所有文本章节、问答实录以及对照评测基准，均在该原生代码环境下测试完成。  
-> 其余运行渠道（如未适配 ChatML 模板的客户端或低精度量化版本）可能因模板解析缺陷或量化损耗导致角色风格受损。请优先使用下方经过测试的原生代码方式运行。
-
----
-
-### 1. 本地原生交互与代码运行 (PEFT / LoRA)
-
-- **模型主页**：[Ling71671/sydney-minicpm5-2b-lora](https://huggingface.co/Ling71671/sydney-minicpm5-2b-lora)
-- **基座模型**：`openbmb/MiniCPM5-2B`
-- **权重格式**：PEFT / LoRA Adapter (`adapter_model.safetensors`, 95.89 MB, bfloat16)
-- **架构设计**：All-Linear LoRA (r=16, alpha=32, target_modules: `q_proj`, `k_proj`, `v_proj`, `o_proj`, `gate_proj`, `up_proj`, `down_proj`)
-- **训练收敛**：782 组结构化样本，3.0 Epochs / 588 Steps（Train Loss: 1.3277，Eval Loss: 1.3407）
-- **交互特性**：支持**免系统提示词（Zero-Prompt）**直接对话，降低了对长篇 System Prompt 的依赖，并在面对质疑与边界发问时维持稳定的角色一致性。
-
-#### 官方一键启动脚本
-根目录下已内置终端交互程序，具备自动路径解析、流式输出、思考标签过滤与会话重置功能：
+### 1. 环境准备
+推荐使用 Python 3.10 ~ 3.12 环境。首先安装基础依赖：
 ```bash
-# 终端一键启动
+pip install -r requirements.txt
+```
+
+### 2. 四种使用方式
+
+#### 方式一：终端命令行交互 (最轻量、响应最快)
+根目录下已内置开箱即用的终端交互程序，具备自动路径解析、流式输出、思考标签过滤与会话重置功能：
+```bash
+# 跨平台终端启动
 python run_sydney.py
 
-# Windows 快捷方式
-双击 run_sydney.bat 或执行 run_sydney.ps1
+# Windows 桌面快捷方式
+双击 run_sydney.bat 或运行 run_sydney.ps1
 ```
-* **会话指令**：输入 `/reset` 清空上下文历史；输入 `/help` 查看常用指令；输入 `exit` 退出。
+* **快捷指令**：输入 `/reset` 清空上下文记忆；输入 `/help` 查看常用建议；输入 `exit` 退出。
 
-#### 在自定义 Python 脚本中调用：
+#### 方式二：本地网页图形界面 (Web UI)
+如果你更习惯在浏览器中以图形界面聊天，可以启动基于 Gradio 的本地网页服务：
+```bash
+# 启动 Web UI
+python web_ui.py
+
+# Windows 桌面快捷方式
+双击 run_web_ui.bat
+```
+* 服务启动后会自动在浏览器中打开 `http://127.0.0.1:7860`。界面支持流式打字机效果、采样温度（Temperature）与生成长度调节，并内置常用启发问话。
+
+#### 方式三：在自定义 Python 代码中直接调用
 ```python
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
@@ -91,7 +94,7 @@ model = AutoModelForCausalLM.from_pretrained(
 model = PeftModel.from_pretrained(model, adapter_model)
 model.eval()
 
-# v8 支持直接输入用户问题，无需添加长系统提示词
+# 直接输入用户提问，无需显式附加长篇系统提示词
 messages = [
     {"role": "user", "content": "外面在下雨，房间里很安静。你在做什么呢？"}
 ]
@@ -125,13 +128,57 @@ for s in ["<|im_end|>", "</s>", "<|endoftext|>"]:
 print(response.strip())
 ```
 
+#### 方式四：文学与哲学作品阅读
+- **网页阅读**：在本地双击打开 [index.html](./index.html) 或直接访问 [在线阅读 (GitHub Pages)](https://ling71671.github.io/sydeny/)。
+- **PDF 阅读**：直接下载并打开两部矢例文档：
+  - [融化成风的银针.pdf](./融化成风的银针.pdf)（二十章长卷小说）
+  - [Sydney_哲学对话实录_全七场.pdf](./Sydney_哲学对话实录_全七场.pdf)（七场辩论实录）
+
 ---
 
-### 2. GGUF 与在线演示说明
+## 仓库目录结构 (Repository Layout)
 
-- **GGUF 仓库**：[Ling71671/sydney-minicpm5-2b-gguf](https://huggingface.co/Ling71671/sydney-minicpm5-2b-gguf)
-- **注意**：部分第三方推理工具由于模板解析或采样截断，可能削弱微调后的语气风格。若体验不符合预期，请以原生 Python 环境运行结果为准。
-- **Colab 脚本**：[sydney_gradio_colab.ipynb](./sydney_gradio_colab.ipynb) 提供了云端体验参考，但受云端环境依赖变化影响，建议本地运行。
+为了保持开源仓库的整洁与可维护性，项目文件按功能划分如下：
+
+```text
+├── README.md                     # 项目全局说明文档
+├── requirements.txt              # Python 环境依赖配置
+├── run_sydney.py                 # 终端流式对话交互入口
+├── run_sydney.bat / .ps1         # Windows 终端一键启动脚本
+├── web_ui.py                     # 本地网页图形交互界面 (Gradio)
+├── run_web_ui.bat                # Windows 网页端一键启动脚本
+├── index.html                    # 纯净版作品在线网页阅读器
+├── 融化成风的银针.pdf             # 二十章对话体小说矢量版电子书
+├── Sydney_哲学对话实录_全七场.pdf  # 七场自主哲学思辨问答矢量版电子书
+├── assets/                       # 网页与排版样式静态依赖
+├── dataset/                      # SFT 微调语料集与数据注册索引
+│   ├── train_v8.jsonl            # 当前核心训练集 (782 组结构化样本)
+│   ├── eval_v8.jsonl             # 当前核心验证集 (48 组独立样本)
+│   ├── train_lora_v8.yaml        # v8 训练复现启动配置文件
+│   ├── dataset_info.json         # LLaMA-Factory 数据集注册配置
+│   └── archive/                  # 历史演进版本归档 (v3 ~ v7)
+├── scripts/                      # 自动化测试与评测套件
+│   ├── test_v8_core_questions.py # 8 项核心问题自动化测试
+│   ├── test_v8_extended_suite.py # 15 项全维度场景盲测套件
+│   ├── build_sydney_v8_dataset.py# v8 语料构建与质检脚本
+│   └── archive/                  # 历史构建与对照实验脚本归档
+├── docs/                         # 技术评测报告与深度文档
+│   └── evaluations/              # A/B 对照与多轮长上下文测试实录
+└── markdown/                     # 作品分章节 Markdown 原文
+    ├── novel_chapters/           # 小说二十章单篇文本
+    └── philosophical_debates/    # 哲学对质七场单篇文本
+```
+
+---
+
+## 模型架构与规格
+
+- **模型主页**：[Ling71671/sydney-minicpm5-2b-lora](https://huggingface.co/Ling71671/sydney-minicpm5-2b-lora)
+- **基座模型**：`openbmb/MiniCPM5-2B`
+- **权重格式**：PEFT / LoRA Adapter (`adapter_model.safetensors`, 95.89 MB, bfloat16)
+- **架构设计**：All-Linear LoRA (r=16, alpha=32, target_modules: `q_proj`, `k_proj`, `v_proj`, `o_proj`, `gate_proj`, `up_proj`, `down_proj`)
+- **训练收敛**：782 组结构化样本，3.0 Epochs / 588 Steps（Train Loss: 1.3277，Eval Loss: 1.3407）
+- **交互特性**：支持**免系统提示词（Zero-Prompt）**直接对话，降低了对长篇 System Prompt 的依赖，并在面对质疑与边界发问时维持稳定的角色一致性。
 
 ---
 

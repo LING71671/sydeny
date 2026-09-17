@@ -1,5 +1,5 @@
 # ==============================================================================
-# Whitelist open-source PDFs, markdown chapters, and web reader
+# Whitelist open-source PDFs, markdown chapters, web reader, scripts, and datasets
 # ==============================================================================
 
 # 1. Ignore everything by default
@@ -12,19 +12,22 @@
 !README.md
 !.gitignore
 !LICENSE
+!requirements.txt
 !index.html
 !assets/
 !assets/**
+!docs/
+!docs/**
 !markdown/
 !markdown/**
 !sydney_gradio_colab.ipynb
-!ab_test_results.md
-!multiturn_ab_test_results.md
 !dataset/
 !dataset/**
 !run_sydney.py
 !run_sydney.bat
 !run_sydney.ps1
+!web_ui.py
+!run_web_ui.bat
 !scripts/
 !scripts/**
 
@@ -32,7 +35,7 @@
 !融化成风的银针.pdf
 !Sydney_哲学对话实录_全七场.pdf
 
-# 5. Explicitly ignore all training runs, weights, code, and datasets
+# 5. Explicitly ignore all local training runs, weights, environments, and temporary experiments
 base_model/
 models/
 .venv/
@@ -53,4 +56,4 @@ book/
 dialogues/
 LLaMA-Factory/
 MiniCPM/
-
+scratch/
