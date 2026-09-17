@@ -10,6 +10,7 @@
 
 # 3. Whitelist repository meta, web page & documentation
 !README.md
+!README_EN.md
 !.gitignore
 !LICENSE
 !requirements.txt
