@@ -96,6 +96,10 @@ def resolve_default_paths():
     adapter_path = os.environ.get("SYDNEY_ADAPTER") or os.environ.get("LORA_ADAPTER_PATH")
     if not adapter_path:
         local_lora_candidates = [
+            root / "runs" / "minicpm5_sydney_zh_v8_zero_prompt",
+            root / "runs" / "minicpm5_sydney_zh_v7_zero_prompt",
+            root / "runs" / "minicpm5_sydney_zh_v6_zero_prompt",
+            root / "runs" / "minicpm5_sydney_zh_v5_zero_prompt",
             root / "runs" / "minicpm5_sydney_zh_v4_zero_prompt",
             root / "runs" / "minicpm5_sydney_zh_v3_zero_prompt",
             root / "runs" / "minicpm5_sydney_zh_v2_core",

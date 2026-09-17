@@ -1,0 +1,58 @@
+# ==============================================================================
+# LLaMA-Factory SFT Configuration for Sydney v5 (Anti-Overfitting & Generalization)
+# ==============================================================================
+
+# Model Configuration
+model_name_or_path: B:/Sydeny/base_model
+trust_remote_code: true
+
+# Method
+stage: sft
+do_train: true
+do_eval: true
+finetuning_type: lora
+lora_rank: 16
+lora_alpha: 32
+lora_dropout: 0.05
+lora_target: all
+
+# Dataset
+dataset: sydney_zh_v5_train
+eval_dataset: sydney_zh_v5_eval
+dataset_dir: ./dataset
+template: minicpm5
+enable_thinking: false
+preserve_thinking: false
+train_on_prompt: false
+mask_history: false
+cutoff_len: 1024
+
+# Training Hyperparameters
+output_dir: ./runs/minicpm5_sydney_zh_v5_zero_prompt
+overwrite_output_dir: true
+per_device_train_batch_size: 1
+gradient_accumulation_steps: 4
+per_device_eval_batch_size: 1
+eval_accumulation_steps: 1
+learning_rate: 6.0e-5
+num_train_epochs: 3.0
+lr_scheduler_type: cosine
+warmup_steps: 10
+max_grad_norm: 1.0
+bf16: true
+gradient_checkpointing: true
+flash_attn: sdpa
+optim: adamw_torch
+
+# Logging & Evaluation Strategy
+logging_steps: 5
+save_strategy: epoch
+eval_strategy: epoch
+save_total_limit: 2
+load_best_model_at_end: true
+metric_for_best_model: eval_loss
+greater_is_better: false
+plot_loss: true
+report_to: none
+seed: 999
+data_seed: 999
